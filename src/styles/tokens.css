@@ -1,0 +1,119 @@
+/* Hallmark · shape: custom (route ribbon) · genre: editorial · theme: custom · job: book · idea: "Одна стрічка на все життя родини: жовта стрічка Medialt веде сторінкою від першого УЗД вагітності до хірургії одного дня, кожна зупинка має ціну, філію і свій телефон" · vibe: "світла, тепла, сімейна, точна, з жовтою стрічкою"
+ * paper: #FFFFFF · accent: #FFFA83 · display: Piazzolla · body: Onest · hero: H1 зліва на 9 колонок, фото лікарки й пацієнтки в арці справа, внизу жовта стрічка з п'ятьма етапами і цінами · nav: sticky white bar, logo left, anchors centre, phone as text and ink pill right; phone + burger + bottom channel bar under 60rem · footer: deep olive band, three columns (branches, lines, sections + legal) · imagery: client photos · signature: жовта стрічка з п'ятьма етапами життя родини, що потім заливає неділю на Пасічній
+ * axes: light/roman-serif/chromatic-yellow · posture: committed · surface: absolute (#FFFFFF, concept palette) · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: E (motion), kept to five effects from concept 8.6, all transform/opacity/clip-path, off under reduced motion */
+/* Hallmark · waive 38ii · .hero__title-2 «від вагітності до хірургії одного дня» · italic is the whole second clause on its own line, the brand voice of the client's own slides, required by concept.md §5 */
+/* Hallmark · waive 38iii · .hero__title-2 · the italic is the whole second line of the H1 set by concept.md §5, not one accented word */
+/* Hallmark · waive 7b · --color-bg #FFFFFF · approved concept palette: white matches the clinic interiors in every client photo, so the photos sit without frames (concept.md §5, 8.2) */
+/* Hallmark · waive 39b · .btn 56px at 1440 · concept.md 8.4/«Кнопки»: primary 56 / 52 px, one size step for the whole site */
+/* Hallmark · waive 44c · arch starts one H1 line lower · concept.md §5: the heading partly runs above the arch, layers instead of two halves */
+/* Hallmark · answer WARN 23 · .sun is one table cell (Sunday at Pasichna), the signature fill from concept.md §5 · answer WARN 42 · footer is three columns: branches, lines, sections + legal row */
+/* Client design tokens from design/concept.md (veon-concept: colors, fonts). HEX is the source of truth. */
+:root {
+  /* colour roles (concept 8.2) */
+  --color-bg: #FFFFFF;
+  --color-surface: #E3E8DA;
+  --color-text: #101322;
+  --color-muted: #4E5462;
+  --color-accent: #FFFA83;
+  --color-accent-ink: #101322;
+  --color-brand: #7C856C;
+  --color-dark: #3D4535;
+  --color-rule: #C9CFBE;
+  --color-on-dark: #FFFFFF;
+  --color-focus: #101322;
+  --color-focus-on-dark: #FFFA83;
+  --color-scrim: rgb(16 19 34 / 0.08);
+
+  /* type (concept 8.3) */
+  --font-display: "Piazzolla", Georgia, "Times New Roman", serif;
+  --font-body: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-h1: clamp(2.5rem, 1.2rem + 5.2vw, 5.5rem);
+  --text-h2: clamp(2rem, 1.35rem + 2.6vw, 3.5rem);
+  --text-h3: clamp(1.625rem, 1.25rem + 1.5vw, 2.25rem);
+  --text-price: clamp(1.75rem, 1.05rem + 2.6vw, 2.75rem);
+  --text-ui: clamp(1.125rem, 1.05rem + 0.3vw, 1.375rem);
+  --text-lead: clamp(1.0625rem, 0.95rem + 0.5vw, 1.25rem);
+  --text-body: clamp(1.0625rem, 1.03rem + 0.12vw, 1.125rem);
+  --text-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+  --text-menu: 2rem;
+  --lh-display: 1.05;
+  --lh-head: 1.1;
+  --lh-ui: 1.3;
+  --lh-body: 1.55;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* spacing scale 4-8 (concept 8.4) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 144px;
+  --section-y: var(--space-8);
+  --gutter: var(--space-4);
+  --page-x: 20px;
+  --space: var(--page-x);
+  --container: 1312px;
+
+  /* shape */
+  --radius: 8px;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --rule: 1px;
+  --border-control: 1.5px;
+  --control-h: 52px;
+  --control-h-sm: 44px;
+  --header-h: 56px;
+  --bar-h: 64px;
+  --ribbon: 72px;
+  --track: 10px;
+  --marker: 32px;
+
+  /* z (craft §3) */
+  --z-raised: 10;
+  --z-sticky: 200;
+  --z-nav: 300;
+  --z-modal: 400;
+  --z-tooltip: 600;
+
+  /* motion (concept 8.6, craft §5) */
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --ease-in: cubic-bezier(.5, 0, .75, 0);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-panel: 240ms;
+  --dur-marker: 300ms;
+  --dur-long: 420ms;
+  --dur-fill: 500ms;
+  --dur: 600ms;
+  --dur-ribbon: 900ms;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --page-x: 32px;
+    --gutter: 20px;
+    --section-y: var(--space-9);
+  }
+}
+
+@media (min-width: 60rem) {
+  :root {
+    --header-h: 72px;
+    --control-h: 56px;
+    --gutter: var(--space-5);
+    --section-y: var(--space-9);
+  }
+}
+
+@media (min-width: 75rem) {
+  :root { --page-x: 64px; }
+}

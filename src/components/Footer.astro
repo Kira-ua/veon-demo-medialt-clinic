@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import logoWhite from "../assets/brand/logo-full-white.png";
+import FutureLink from "./FutureLink.astro";
+import Icon from "./Icon.astro";
+import { branches, phones, channels, socials, FUTURE } from "../data/site";
+
+const sections = ["Дорослим", "Дітям", "Ведення вагітності", "Чекапи", "Хірургія", "УЗД", "Аналізи", "Лікарі", "Ціни", "Про нас", "Блог"];
+const lines = [phones.main, phones.pregnancy, phones.surgery];
+const dayRanges = (h: readonly (string | null)[]) => [
+  { d: "Пн–пт", t: h[0] },
+  { d: "Сб", t: h[5] },
+  { d: "Нд", t: h[6] ?? "вихідний" },
+];
+---
+<footer id="contacts" class="footer on-dark" data-rec="UX-R003">
+  <div class="container footer__in">
+    <div class="footer__top">
+      <a class="footer__logo" href="#top" aria-label="Medialt, на початок сторінки">
+        <Image src={logoWhite} alt="Medialt medical clinic" width={168} height={28} densities={[1, 2]} loading="lazy" decoding="async" />
+      </a>
+      <h2 class="visually-hidden">Контакти</h2>
+    </div>
+
+    <div class="footer__cols">
+      <section class="footer__col" aria-labelledby="f-branches">
+        <h3 id="f-branches">Філії</h3>
+        {branches.map((b) => (
+          <div class="footer__branch">
+            <p class="footer__strong">{b.street}</p>
+            <p>{b.complex}, {b.city}</p>
+            <dl class="footer__hours">
+              {dayRanges(b.hours).map((r) => (<div><dt>{r.d}</dt><dd class="num">{r.t}</dd></div>))}
+            </dl>
+            <a class="footer__link" href={b.map} target="_blank" rel="noopener"><Icon name="pin" size={18} /> Маршрут на карті</a>
+          </div>
+        ))}
+      </section>
+
+      <section class="footer__col" aria-labelledby="f-lines">
+        <h3 id="f-lines">Телефони</h3>
+        <ul role="list" class="footer__lines">
+          {lines.map((p) => (
+            <li>
+              <a class="footer__phone num" href={p.href}>{p.display}</a>
+              <span class="footer__muted">{p.purpose}</span>
+            </li>
+          ))}
+        </ul>
+        <ul role="list" class="footer__channels">
+          <li><a class="footer__link" href={channels.telegram} target="_blank" rel="noopener"><Icon name="telegram" size={18} /> Telegram</a></li>
+          <li><a class="footer__link" href={channels.viber}><Icon name="viber" size={18} /> Viber</a></li>
+          <li><a class="footer__link" href={`mailto:${channels.email}`}><Icon name="mail" size={18} /> {channels.email}</a></li>
+        </ul>
+        <ul role="list" class="footer__social" aria-label="Medialt у соцмережах" data-rec="S-R008">
+          {socials.map((s) => (
+            <li><a href={s.href} target="_blank" rel="noopener" aria-label={s.label}><Icon name={s.id} size={22} /></a></li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="footer__col" aria-labelledby="f-sections">
+        <h3 id="f-sections">Розділи</h3>
+        <ul role="list" class="footer__sections">
+          {sections.map((s) => <li><FutureLink note={FUTURE}>{s}</FutureLink></li>)}
+        </ul>
+      </section>
+    </div>
+
+    <div class="footer__legal">
+      <p>Ліцензія на медичну практику: наказ МОЗ №512 від 07.03.2019</p>
+      <ul role="list">
+        <li><FutureLink note={FUTURE}>Договір оферти</FutureLink></li>
+        <li><FutureLink note={FUTURE}>Політика конфіденційності</FutureLink></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-dark); color: var(--color-on-dark);
+    padding-block: var(--space-8) calc(var(--space-6) + var(--bar-h) + env(safe-area-inset-bottom));
+  }
+  .footer__in { display: grid; gap: var(--space-7); }
+  .footer__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+  .footer__logo { display: inline-flex; padding-block: var(--space-2); }
+  .footer__logo img { width: 168px; height: auto; }
+  .footer__cols { display: grid; gap: var(--space-7); }
+  .footer__col { display: grid; gap: var(--space-4); align-content: start; }
+  .footer__col h3 { font-family: var(--font-body); font-size: var(--text-small); font-weight: var(--weight-medium); color: var(--color-accent); letter-spacing: 0; }
+  .footer__branch { display: grid; gap: var(--space-1); padding-bottom: var(--space-4); }
+  .footer__branch + .footer__branch { padding-top: var(--space-4); border-top: var(--rule) solid var(--color-brand); }
+  .footer__strong { font-weight: var(--weight-semibold); }
+  .footer__hours { display: grid; gap: 2px; margin-block: var(--space-2); font-size: var(--text-small); }
+  .footer__hours > div { display: grid; grid-template-columns: 5.5em auto; }
+  .footer__muted { font-size: var(--text-small); color: var(--color-rule); }
+  .footer__lines, .footer__channels, .footer__sections { display: grid; gap: var(--space-3); padding: 0; }
+  .footer__lines li { display: grid; }
+  .footer__phone { font-size: var(--text-ui); font-weight: var(--weight-semibold); text-decoration: none; justify-self: start; min-height: 32px; }
+  .footer__link { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 32px; text-decoration: underline 1px transparent; text-underline-offset: 0.25em; transition: text-decoration-color var(--dur-short) var(--ease-out); overflow-wrap: anywhere; }
+  .footer__link :global(svg) { flex-shrink: 0; }
+  @media (hover: hover) {
+    .footer__link:hover, .footer__phone:hover { text-decoration: underline 1px currentColor; }
+    .footer__social a:hover { background: var(--color-accent); color: var(--color-accent-ink); }
+  }
+  .footer__social { display: flex; gap: var(--space-2); padding: 0; margin-top: var(--space-2); }
+  .footer__social a {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: var(--rule) solid var(--color-brand);
+    transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+  }
+  .footer__sections { grid-template-columns: repeat(2, minmax(0, max-content)); column-gap: var(--space-6); }
+  .footer__sections :global(.future-link) { min-height: 32px; }
+  .footer__legal { display: grid; gap: var(--space-3); padding-top: var(--space-5); border-top: var(--rule) solid var(--color-brand); font-size: var(--text-small); color: var(--color-rule); }
+  .footer__legal ul { display: flex; flex-wrap: wrap; gap: var(--space-5); padding: 0; }
+
+  @media (min-width: 60rem) {
+    .footer { padding-block: var(--space-9) var(--space-6); }
+    .footer__cols { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
+    .footer__col:nth-child(1) { grid-column: 1 / span 4; }
+    .footer__col:nth-child(2) { grid-column: 5 / span 4; }
+    .footer__col:nth-child(3) { grid-column: 9 / span 4; }
+    .footer__legal { grid-template-columns: 1fr auto; align-items: center; }
+  }
+</style>

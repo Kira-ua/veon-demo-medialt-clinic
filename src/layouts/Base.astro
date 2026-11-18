@@ -1,0 +1,49 @@
+---
+import "../styles/fonts.css";
+import "../styles/tokens.css";
+import "../styles/global.css";
+import "../styles/motion.css";
+import displayFont from "../assets/fonts/piazzolla-cyrillic-wght-normal.woff2?url";
+
+interface Props { lang: string; title: string; description: string; rec?: string; jsonld?: object; }
+const { lang, title, description, rec, jsonld } = Astro.props;
+// Canonical: absolute when SITE_URL is set for the build (main domain / preview differ only by env, pre-launch-analytics.md §3);
+// Without a domain (DEMO) no canonical is printed: a relative one is invalid; SEO-R003 is set at launch on the main domain.
+const canonical = Astro.site ? new URL(import.meta.env.BASE_URL, Astro.site).href : null;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} data-rec="SEO-R002" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {Astro.site && <meta property="og:url" content={canonical} />}
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${base}favicon-32.png`} />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    {jsonld && <script type="application/ld+json" data-rec="SEO-R004,S-R008" set:html={JSON.stringify(jsonld)} />}
+    <slot name="head" />
+  </head>
+  <body id="top" data-rec={rec}>
+    <a class="skip-link" href="#main">До змісту</a>
+    <slot name="header" />
+    <main id="main"><slot /></main>
+    <slot name="footer" />
+    <script src="../scripts/reveal.ts"></script>
+  </body>
+</html>
+
+<style is:global>
+  /* Floor 4: clip, never hidden, on both html and body (kept here too so the layout is safe on its own) */
+  html, body { overflow-x: clip; font-synthesis: none; }
+</style>

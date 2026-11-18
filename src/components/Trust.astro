@@ -1,0 +1,76 @@
+---
+import { Picture } from "astro:assets";
+import archive from "../assets/photos/trust-archive.webp";
+import { phones } from "../data/site";
+// Facts only, each with its source (UX-R010; C-012, C-016, C-017, C-018, C-021, company.business_lines)
+---
+<section id="trust" class="trust" data-rec="UX-R010,G-R006" aria-labelledby="trust-title">
+  <div class="container trust__in">
+    <figure class="trust__photo">
+      <Picture
+        src={archive}
+        formats={["avif"]}
+        fallbackFormat="webp"
+        widths={[480, 720, 1000]}
+        sizes="(min-width: 60rem) 38vw, calc(100vw - 40px)"
+        alt="Архівне чорно-біле фото: лікарка в білому халаті і шапочці зі стетоскопом усміхається немовляті на сповивальному столику"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>Сімейна лікарська традиція з 1950-х</figcaption>
+    </figure>
+
+    <div class="trust__body">
+      <h2 id="trust-title">Чому родини обирають Medialt</h2>
+      <dl class="facts">
+        <div class="fact fact--lead">
+          <dt>Оцінка пацієнтів на DOC.UA</dt>
+          <dd><span class="fact__big num">4,9</span> <span class="fact__unit">із 5 за 29 відгуками</span></dd>
+          <dd class="fact__src">Каталог клінік DOC.UA, обидві філії, листопад 2026</dd>
+        </div>
+        <div class="fact">
+          <dt>Страхування</dt>
+          <dd>Страхові партнери, серед них INGO, UNIQA, Universalna. <a class="link" href={phones.main.href}>Уточніть покриття за телефоном <span class="num">{phones.main.display}</span></a></dd>
+        </div>
+        <div class="fact">
+          <dt>Ліцензія</dt>
+          <dd>Медична практика за наказом МОЗ №512 від 07.03.2019</dd>
+        </div>
+        <div class="fact">
+          <dt>УЗД</dt>
+          <dd>Апарат Siemens X300 PE</dd>
+        </div>
+        <div class="fact">
+          <dt>Аналізи</dt>
+          <dd>Лабораторії-партнери Synevo і Dila</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .trust { padding-block: var(--section-y); }
+  .trust__in { display: grid; gap: var(--space-7); }
+  .trust__photo { margin: 0; display: grid; gap: var(--space-3); }
+  .trust__photo :global(img) { width: 100%; height: auto; aspect-ratio: 1280 / 897; object-fit: cover; filter: grayscale(1); }
+  .trust__photo figcaption { font-family: var(--font-display); font-style: italic; font-size: var(--text-ui); line-height: var(--lh-ui); max-width: 28ch; }
+
+  .trust__body { display: grid; gap: var(--space-6); align-content: start; }
+  .facts { display: grid; }
+  .fact { display: grid; align-content: start; gap: var(--space-1); padding-block: var(--space-4); border-top: var(--rule) solid var(--color-rule); }
+  .fact dt { font-size: var(--text-small); color: var(--color-muted); }
+  .fact dd { max-width: 48ch; }
+  .fact--lead { padding-top: 0; border-top: 0; gap: var(--space-2); }
+  .fact__big { font-family: var(--font-display); font-size: var(--text-h2); line-height: 1; font-weight: var(--weight-medium); }
+  .fact__unit { font-weight: var(--weight-medium); }
+  .fact__src { font-size: var(--text-small); color: var(--color-muted); }
+
+  @media (min-width: 60rem) {
+    .trust__in { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
+    .trust__photo { grid-column: 1 / span 5; }
+    .trust__body { grid-column: 7 / span 6; }
+    .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
+    .fact--lead { grid-column: 1 / -1; padding-bottom: var(--space-6); }
+  }
+</style>

@@ -1,0 +1,167 @@
+---
+import { Picture } from "astro:assets";
+import heroPhoto from "../assets/photos/hero-arch.webp";
+import Icon from "./Icon.astro";
+import { phones, channels, routes } from "../data/site";
+// centre line of the ribbon (px from the top of the 170px band) under each stop, follows the curve in the SVG path
+const ys = [104, 86, 75, 71, 74];
+---
+<section id="hero" class="hero" data-rec="UX-R001,SEO-R001,PERF-R001,PERF-R002,G-R005,M-R005" aria-labelledby="hero-title">
+  <h1 id="hero-title" class="hero__title">Сімейний медичний центр у Львові — <span class="hero__title-2">від вагітності до хірургії одного дня</span></h1>
+
+  <div class="hero__body">
+    <p class="hero__lead">Дві філії: Угорська,&nbsp;12 та Пасічна,&nbsp;166. У&nbsp;неділю приймаємо на Пасічній, <span class="num">9:00–15:00</span>.</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary hero__call" href={phones.main.href}>
+        <Icon name="phone" />
+        <span>Подзвонити</span>
+        <span class="hero__call-num num">{phones.main.display}</span>
+      </a>
+      <a class="btn btn--secondary hero__msg" href={channels.telegram} target="_blank" rel="noopener"><Icon name="telegram" /> Telegram</a>
+      <a class="btn btn--secondary hero__msg" href={channels.viber}><Icon name="viber" /> Viber</a>
+    </div>
+  </div>
+
+  <nav class="ribbon" aria-label="Маршрути: з чим ви до нас" data-rec="UX-R002,S-R010">
+    <svg class="ribbon__band" viewBox="0 0 1440 170" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path d="M-80 130 Q720 30 1520 82" />
+    </svg>
+    <ol class="ribbon__stops" role="list">
+      {routes.map((r, i) => (
+        <li style={`--y:${ys[i]}`}>
+          <a class="stop" href={`#route-${r.id}`} data-route={r.id}>
+            <span class="stop__mark"><Icon name="plus" size={18} /></span>
+            <span class="stop__name">{r.name}</span>
+            <span class="stop__from num">{r.from}</span>
+            <span class="stop__go" aria-hidden="true"><Icon name="chevron" size={18} /></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <figure class="hero__photo arch">
+    <Picture
+      src={heroPhoto}
+      formats={["avif"]}
+        fallbackFormat="webp"
+      widths={[480, 720, 960, 1280]}
+      sizes="(min-width: 60rem) 30vw, calc(100vw - 40px)"
+      alt="Лікарка Medialt у зеленій формі розмовляє з пацієнткою біля апарата УЗД"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      class="hero__img"
+    />
+  </figure>
+</section>
+
+<style>
+  /* mobile: one column, order = H1, sentence, call, vertical track, photo */
+  .hero { position: relative; display: flex; flex-direction: column; padding-top: var(--space-6); }
+  .hero > * { width: min(100% - 2 * var(--page-x), var(--container)); margin-inline: auto; }
+  .hero__title { max-width: none; }
+  .hero__title, .hero__body { padding-inline-end: 0; }
+  .hero__title-2 { display: block; font-style: italic; font-synthesis: none; }
+  .hero__body { margin-top: var(--space-5); }
+  .hero__lead { font-size: var(--text-lead); line-height: 1.45; color: var(--color-muted); max-width: 40ch; }
+  .hero__actions { display: none; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
+  .hero__call { flex: 1 1 100%; }
+  .hero__call-num { display: none; font-weight: var(--weight-regular); }
+  .hero__msg { display: none; }
+
+  .arch { position: relative; margin: 0; overflow: hidden; border-radius: 9999px 9999px 0 0; background: var(--color-surface); }
+  .hero__photo { aspect-ratio: 16 / 10; border-radius: 50% 50% 0 0 / 46% 46% 0 0; margin-top: var(--space-7); }
+  .hero__photo :global(picture) { display: block; height: 100%; }
+  .hero__photo :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+
+  /* ribbon: vertical track under 60rem */
+  .ribbon { position: relative; margin-top: var(--space-6); }
+  .ribbon__band { display: none; }
+  .ribbon__stops { position: relative; display: grid; padding: 0; }
+  .ribbon__stops::before {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: calc((var(--marker) - var(--track)) / 2);
+    width: var(--track); background: var(--color-accent); border-radius: var(--radius-pill);
+  }
+  .stop {
+    position: relative; display: grid; grid-template-columns: var(--marker) minmax(0, 1fr) auto 18px; align-items: center; column-gap: var(--space-3);
+    min-height: 56px; text-decoration: none;
+  }
+  .stop::after { content: ""; position: absolute; inset: auto 0 0 calc(var(--marker) + var(--space-3)); border-bottom: var(--rule) solid var(--color-rule); }
+  li:last-child .stop::after { display: none; }
+  .stop__mark {
+    display: grid; place-items: center; width: var(--marker); height: var(--marker); border-radius: 50%;
+    background: var(--color-accent); color: var(--color-accent-ink);
+    transition: transform var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+  }
+  .stop__name { font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: var(--lh-ui); }
+  .stop__from { font-size: var(--text-small); color: var(--color-muted); }
+  .stop__go { color: var(--color-muted); transition: transform var(--dur-short) var(--ease-out); }
+  .stop:active .stop__mark { transform: scale(0.94); }
+  @media (hover: hover) {
+    .stop:hover .stop__mark { background: var(--color-text); color: var(--color-accent); }
+    .stop:hover .stop__go { transform: translateX(3px); }
+  }
+
+  /* narrowest phones: the entry price drops under the name */
+  @media (max-width: 24rem) {
+    .stop { grid-template-columns: var(--marker) minmax(0, 1fr) 18px; grid-template-rows: auto auto; row-gap: 0; padding-block: var(--space-2); }
+    .stop__mark { grid-row: 1 / span 2; }
+    .stop__from { grid-column: 2; grid-row: 2; }
+    .stop__go { grid-column: 3; grid-row: 1 / span 2; }
+  }
+
+  @media (min-width: 40rem) {
+    .hero { padding-top: var(--space-7); }
+    .hero__call { flex: 0 0 auto; }
+    .hero__actions { margin-top: var(--space-6); }
+  }
+
+  /* desktop: the section is a full-bleed 12-column grid; H1 over 9, arch over 4, ribbon edge to edge */
+  @media (min-width: 60rem) {
+    .hero {
+      display: grid;
+      grid-template-columns:
+        [full-start] minmax(calc(var(--page-x) - var(--gutter)), 1fr)
+        [content-start] repeat(12, minmax(0, calc((var(--container) - 11 * var(--gutter)) / 12)))
+        [content-end] minmax(calc(var(--page-x) - var(--gutter)), 1fr) [full-end];
+      grid-template-rows: auto 1fr auto;
+      column-gap: var(--gutter);
+      padding-top: var(--space-7);
+    }
+    .hero > * { width: auto; margin-inline: 0; }
+    .hero__title { grid-column: 2 / span 9; grid-row: 1; position: relative; z-index: var(--z-raised); max-width: 15ch; }
+    .hero__body { grid-column: 2 / span 8; grid-row: 2; margin-top: var(--space-6); padding-bottom: var(--space-10); }
+    .hero__actions { display: flex; }
+    .hero__msg { display: inline-flex; }
+    .hero__photo {
+      grid-column: 10 / span 4; grid-row: 1 / span 2; align-self: stretch;
+      margin-top: calc(var(--text-h1) * 1.2); aspect-ratio: auto; min-height: 420px; margin-bottom: var(--space-6); border-radius: 9999px 9999px 0 0;
+    }
+
+    .ribbon { grid-column: full; grid-row: 3; margin-top: calc(-1 * (var(--space-9) + var(--space-3))); height: 176px; z-index: var(--z-raised); pointer-events: none; }
+    .ribbon__band { display: block; position: absolute; inset: 0 0 auto 0; width: 100%; height: 170px; overflow: hidden; }
+    .ribbon__band path { fill: none; stroke: var(--color-accent); stroke-width: var(--ribbon); vector-effect: non-scaling-stroke; }
+    .ribbon__stops {
+      width: min(100% - 2 * var(--page-x), var(--container)); margin-inline: auto; height: 100%;
+      grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: var(--gutter);
+    }
+    .ribbon__stops::before { display: none; }
+    .ribbon__stops li { position: relative; }
+    .stop {
+      position: absolute; inset-inline-start: 0; top: calc(var(--y) * 1px - 28px);
+      grid-template-columns: var(--marker) auto; grid-template-rows: 56px auto; row-gap: var(--space-3); column-gap: var(--space-3);
+      min-height: 0; pointer-events: auto; padding-inline-end: var(--space-3);
+    }
+    .stop::after { display: none; }
+    .stop__mark { background: var(--color-bg); }
+    .stop__name { white-space: nowrap; }
+    .stop__from { grid-column: 2; grid-row: 2; margin-top: calc((104 - var(--y)) * 1px); }
+    .stop__go { display: none; }
+    @media (hover: hover) {
+      .stop:hover .stop__name { text-decoration: underline 1.5px; text-underline-offset: 0.3em; }
+    }
+  }
+  @media (min-width: 75rem) { .hero__call-num { display: inline; } }
+  @media (min-width: 60rem) and (max-width: 75rem) { .stop__name { font-size: var(--text-body); } }
+</style>

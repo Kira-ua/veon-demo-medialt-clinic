@@ -1,0 +1,40 @@
+/* Motion (concept 8.6): five effects, only transform / opacity / clip-path, no layout shift.
+   Hidden start states live under .js (scripting on) and no-preference only: without JS or with reduced motion everything is in place. */
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. Ribbon is drawn left to right (desktop) / the track unrolls top to bottom (phone). H1 and buttons are not animated. */
+  .js .ribbon__stops { animation: track-in var(--dur-fill) var(--ease-out) 150ms both; }
+  @media (min-width: 60rem) {
+    .js .ribbon__stops { animation: none; }
+    .js .ribbon { animation: ribbon-in var(--dur-ribbon) var(--ease-out) 200ms both; }
+  }
+
+  /* 3. Arch photo: the room settles in (hero on load; branches on scroll, desktop only) */
+  .js .hero__photo img { animation: arch-in var(--dur) var(--ease-out) both; }
+  @media (min-width: 60rem) {
+    .js .hero__photo img { animation-duration: var(--dur-ribbon); }
+    .js [data-reveal="arch"] img { opacity: 0; transform: scale(1.04); transition: opacity var(--dur-ribbon) var(--ease-out), transform var(--dur-ribbon) var(--ease-out); }
+    .js [data-reveal="arch"].is-visible img { opacity: 1; transform: none; }
+  }
+
+  /* 2. Route switch: the marker slides (transition in Routes.astro), the panel fades up 8px; phone: opacity only */
+  .js .route__body.is-entering { animation: panel-in-soft 200ms var(--ease-out) both; }
+  @media (min-width: 60rem) {
+    .js .route__body.is-entering { animation: panel-in var(--dur-panel) var(--ease-out) both; }
+  }
+
+  /* 4. Sunday at Pasichna fills with yellow when the week comes into view */
+  .js [data-reveal="fill"] .sun::before { transform: scaleX(0); transform-origin: left center; transition: transform var(--dur-fill) var(--ease-out) 150ms; }
+  .js [data-reveal="fill"].is-visible .sun::before { transform: none; }
+}
+
+@keyframes ribbon-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes track-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes arch-in { from { opacity: 0.4; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes panel-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes panel-in-soft { from { opacity: 0; } to { opacity: 1; } }
+
+/* 5. Micro states (hover, press scale 0.98, focus ring) are on the controls themselves; under reduced motion: */
+@media (prefers-reduced-motion: reduce) {
+  .ribbon, .ribbon__stops, .hero__photo img, .route__body, .track__marker { animation: none !important; transition: none !important; }
+  [data-reveal] img, .sun::before { opacity: 1 !important; transform: none !important; transition: none !important; }
+}

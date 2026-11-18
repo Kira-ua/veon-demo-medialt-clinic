@@ -1,0 +1,317 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import pregnancy from "../assets/photos/route-pregnancy.webp";
+import child from "../assets/photos/route-child.webp";
+import adult from "../assets/photos/route-adult.webp";
+import checkup from "../assets/photos/route-checkup.webp";
+import surgery from "../assets/photos/route-surgery.webp";
+import FutureLink from "./FutureLink.astro";
+import Icon from "./Icon.astro";
+import { routes, channels, FUTURE } from "../data/site";
+
+const photos: Record<string, ImageMetadata> = { pregnancy, child, adult, checkup, surgery };
+// object-position per photo so faces stay inside both crops (4:5 on desktop, arch 16:10 on a phone)
+const focus: Record<string, string> = { pregnancy: "60% 40%", child: "50% 50%", adult: "35% 40%", checkup: "55% 35%", surgery: "50% 40%" };
+---
+<section id="routes" class="routes" data-rec="UX-R002,UX-R003,S-R010,G-R006,M-R006" aria-labelledby="routes-title">
+  <div class="routes__in container" data-routes>
+    <div class="routes__side">
+      <h2 id="routes-title">З чим ви до нас</h2>
+      <div class="track" role="tablist" aria-orientation="vertical" aria-label="Маршрути" hidden>
+        <span class="track__marker" aria-hidden="true"><Icon name="plus" size={18} /></span>
+        {routes.map((r, i) => (
+          <button class="track__tab" type="button" role="tab" id={`tab-${r.id}`} aria-controls={`route-${r.id}`} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}>
+            <span class="track__name">{r.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="routes__panels">
+      {routes.map((r, i) => (
+        <article class="route" id={`route-${r.id}`} data-index={i}>
+          <h3 class="route__head">
+            <button class="route__toggle" type="button" aria-expanded="true" aria-controls={`route-${r.id}-body`}>
+              <span class="route__mark" aria-hidden="true"><Icon name="plus" size={16} /></span>
+              {r.name}
+              <span class="route__chev" aria-hidden="true"><Icon name="chevron" size={18} /></span>
+            </button>
+          </h3>
+          <div class="route__body" id={`route-${r.id}-body`}>
+            <div class="route__text">
+              <p class="route__lead">{r.lead}</p>
+
+              <div class="route__main">
+                <span class="route__main-label">{r.main.label}</span>
+                <span class:list={["route__main-value", r.prices.length === 0 && "route__main-value--text"]}>{r.main.value}</span>
+              </div>
+
+              {r.prices.length > 0 && (
+                <dl class="route__prices">
+                  {r.prices.map((p) => (
+                    <div>
+                      <dt>{p.label}</dt>
+                      <dd class="num">{p.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              {r.extra && (
+                <ul class="route__extra" role="list" aria-label="Напрями хірургії">
+                  {r.extra.map((x) => <li>{x}</li>)}
+                </ul>
+              )}
+
+              <p class="route__where">{r.where}</p>
+
+              <div class="route__act">
+                {r.line.phone && (
+                  <a class="route__line" href={r.line.phone.href}>
+                    <Icon name="phone" />
+                    <span class="route__line-text">
+                      <span class="route__line-label">{r.line.label}</span>
+                      <span class="route__line-num num">{r.line.phone.display}</span>
+                    </span>
+                  </a>
+                )}
+                {r.line.telegram && (
+                  <a class="btn btn--secondary" href={channels.telegram} target="_blank" rel="noopener"><Icon name="telegram" /> Telegram</a>
+                )}
+              </div>
+              <FutureLink note={FUTURE} class="route__more">{r.more}</FutureLink>
+            </div>
+
+            <figure class="route__photo">
+              <Picture
+                src={photos[r.photo]}
+                formats={["avif"]}
+        fallbackFormat="webp"
+                widths={[400, 640, 960]}
+                sizes="(min-width: 60rem) 26vw, calc(100vw - 40px)"
+                alt={r.alt}
+                loading="lazy"
+                decoding="async"
+                style={`object-position:${focus[r.photo]}`}
+              />
+            </figure>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .routes { padding-block: var(--section-y); }
+  .routes__in { display: grid; gap: var(--space-6); }
+  .routes__side h2 { max-width: 12ch; }
+
+  /* ---- phone: accordion on a yellow track ---- */
+  .routes__panels { position: relative; display: grid; }
+  .routes__panels::before {
+    content: ""; position: absolute; inset-block: var(--space-4); inset-inline-start: calc((var(--marker) - var(--track)) / 2);
+    width: var(--track); background: var(--color-accent); border-radius: var(--radius-pill);
+  }
+  .route { position: relative; }
+  .route + .route { border-top: var(--rule) solid var(--color-rule); }
+  .route__head { font-family: var(--font-body); font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: var(--lh-ui); letter-spacing: 0; }
+  .route__toggle {
+    display: grid; grid-template-columns: var(--marker) minmax(0, 1fr) 18px; align-items: center; column-gap: var(--space-3);
+    width: 100%; min-height: 64px; padding: 0; border: 0; background: transparent; text-align: start; cursor: pointer;
+  }
+  .route__mark {
+    position: relative; display: grid; place-items: center; width: var(--marker); height: var(--marker); border-radius: 50%;
+    background: var(--color-accent); color: var(--color-accent-ink);
+    transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+  }
+  .route__toggle[aria-expanded="true"] .route__mark { background: var(--color-text); color: var(--color-accent); }
+  .route__chev { color: var(--color-muted); transform: rotate(90deg); transition: transform var(--dur-short) var(--ease-in-out); }
+  .route__toggle[aria-expanded="true"] .route__chev { transform: rotate(-90deg); }
+  :global(html:not(.js)) .route__chev { display: none; }
+
+  .route__body { display: grid; gap: var(--space-6); padding: var(--space-2) 0 var(--space-7) calc(var(--marker) + var(--space-3)); }
+  .route__body[hidden] { display: none; }
+  .route__text { display: grid; gap: var(--space-5); align-content: start; }
+  .route__lead { max-width: 44ch; }
+  .route__main { display: grid; gap: var(--space-1); }
+  .route__main-label { font-size: var(--text-small); color: var(--color-muted); }
+  .route__main-value { font-family: var(--font-display); font-size: var(--text-price); font-weight: var(--weight-medium); line-height: 1.1; font-variant-numeric: lining-nums; }
+  .route__main-value--text { font-size: var(--text-h3); max-width: 18ch; }
+  .route__prices { display: grid; gap: 0; }
+  .route__prices > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: var(--space-4); padding-block: var(--space-3); border-top: var(--rule) solid var(--color-rule); }
+  .route__prices > div:last-child { border-bottom: var(--rule) solid var(--color-rule); }
+  .route__prices dt { font-size: var(--text-small); color: var(--color-muted); }
+  .route__prices dd { font-size: var(--text-ui); font-weight: var(--weight-semibold); }
+  .route__extra { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0; }
+  .route__extra li { padding: var(--space-1) var(--space-3); border: var(--rule) solid var(--color-brand); border-radius: var(--radius-pill); font-size: var(--text-small); font-weight: var(--weight-medium); }
+  .route__where { font-size: var(--text-small); color: var(--color-muted); max-width: 46ch; }
+  .route__act { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .route__line {
+    display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--control-h); padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-pill); background: var(--color-text); color: var(--color-bg); text-decoration: none;
+    transition: background-color var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+  }
+  .route__line :global(svg) { flex-shrink: 0; }
+  .route__line-text { display: grid; line-height: 1.2; }
+  .route__line-label { font-size: var(--text-small); font-weight: var(--weight-medium); }
+  .route__line-num { font-size: var(--text-body); font-weight: var(--weight-semibold); }
+  .route__line:active { transform: scale(0.98); }
+  @media (hover: hover) { .route__line:hover { background: var(--color-dark); } }
+  .route__more { justify-self: start; min-height: 44px; }
+
+  .route__photo { margin: 0; overflow: hidden; aspect-ratio: 16 / 10; border-radius: 50% 50% 0 0 / 46% 46% 0 0; background: var(--color-surface); }
+  .route__photo :global(picture) { display: block; height: 100%; }
+  .route__photo :global(img) { width: 100%; height: 100%; object-fit: cover; }
+
+
+  /* ---- tablet and up without the track: still one column ---- */
+  @media (min-width: 40rem) {
+    .route__prices { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gutter); }
+    .route__prices > div { grid-template-columns: 1fr; align-content: start; gap: var(--space-1); padding-block: var(--space-3) 0; border-bottom: 0 !important; }
+  }
+
+  /* ---- desktop: 4 + 8 columns, vertical ribbon as a tablist ---- */
+  @media (min-width: 60rem) {
+    .routes { padding-block: calc(var(--space-9) + var(--space-5)) var(--space-8); }
+    .routes__in { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: start; }
+    .routes__side { grid-column: 1 / span 4; position: sticky; top: calc(var(--header-h) + var(--space-7)); display: grid; gap: var(--space-7); }
+    .routes__panels { grid-column: 5 / span 8; }
+
+    :global(.js) .routes__panels::before { display: none; }
+    :global(.js) .route + .route { border-top: 0; }
+    :global(.js) .route__toggle { display: block; min-height: 0; pointer-events: none; cursor: default; }
+    :global(.js) .route__mark, :global(.js) .route__chev { display: none; }
+    :global(.js) .route__head { font-family: var(--font-display); font-size: var(--text-h2); font-weight: var(--weight-regular); line-height: var(--lh-head); letter-spacing: -0.015em; }
+    :global(.js) .route__body { padding: var(--space-6) 0 0; }
+
+    .route__body { grid-template-columns: repeat(8, minmax(0, 1fr)); column-gap: var(--gutter); }
+    .route__text { grid-column: 1 / span 5; gap: var(--space-6); }
+    .route__photo { grid-column: 6 / span 3; aspect-ratio: 4 / 5; border-radius: 0; }
+
+    .track { display: grid; position: relative; padding-inline-start: calc(var(--marker) + var(--space-4)); }
+    .track[hidden] { display: none; }
+    .track::before {
+      content: ""; position: absolute; inset-block: var(--space-4); inset-inline-start: calc((var(--marker) - var(--track)) / 2);
+      width: var(--track); background: var(--color-accent); border-radius: var(--radius-pill);
+    }
+    .track__marker {
+      position: absolute; inset-inline-start: 0; top: calc((72px - var(--marker)) / 2);
+      display: grid; place-items: center; width: var(--marker); height: var(--marker); border-radius: 50%;
+      background: var(--color-text); color: var(--color-accent);
+      transform: translateY(calc(var(--sel, 0) * 72px));
+      transition: transform var(--dur-marker) var(--ease-in-out);
+    }
+    .track__tab {
+      position: relative; display: grid; align-content: center; gap: 2px; height: 72px; padding: 0 var(--space-3);
+      border: 0; border-radius: var(--radius); background: transparent; text-align: start; cursor: pointer;
+      color: var(--color-muted); transition: color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+    }
+    .track__tab::before {
+      content: ""; position: absolute; inset-inline-start: calc(-1 * (var(--marker) + var(--space-4)) + (var(--marker) - 12px) / 2); top: calc(50% - 6px);
+      width: 12px; height: 12px; border-radius: 50%; background: var(--color-bg); border: 2px solid var(--color-text);
+    }
+    .track__name { font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: var(--lh-ui); }
+    .track__tab[aria-selected="true"] { color: var(--color-text); }
+    .track__tab:active { transform: scale(0.98); }
+    @media (hover: hover) { .track__tab:hover { color: var(--color-text); background: var(--color-surface); } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track__tab:active, .route__line:active { transform: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-routes]");
+  if (root) {
+    const track = root.querySelector<HTMLElement>(".track")!;
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role='tab']")];
+    const items = [...root.querySelectorAll<HTMLElement>(".route")];
+    const toggles = items.map((it) => it.querySelector<HTMLButtonElement>(".route__toggle")!);
+    const bodies = items.map((it) => it.querySelector<HTMLElement>(".route__body")!);
+    const wide = matchMedia("(min-width: 60rem)");
+    const open = new Set<number>([0]);
+    let current = 0;
+
+    const play = (el: HTMLElement) => {
+      el.classList.remove("is-entering");
+      void el.offsetWidth;
+      el.classList.add("is-entering");
+    };
+
+    const select = (i: number, focus = false) => {
+      current = i;
+      root.style.setProperty("--sel", String(i));
+      tabs.forEach((t, k) => {
+        t.setAttribute("aria-selected", String(k === i));
+        t.tabIndex = k === i ? 0 : -1;
+      });
+      if (wide.matches) {
+        items.forEach((it, k) => { it.hidden = k !== i; });
+        play(bodies[i]);
+      }
+      if (focus) tabs[i].focus();
+    };
+
+    const setOpen = (i: number, on: boolean) => {
+      if (on) [...open].filter((k) => k !== i).forEach((k) => setOpen(k, false));
+      on ? open.add(i) : open.delete(i);
+      toggles[i].setAttribute("aria-expanded", String(on));
+      bodies[i].hidden = !on;
+      if (on) play(bodies[i]);
+    };
+
+    const mode = () => {
+      if (wide.matches) {
+        track.hidden = false;
+        items.forEach((it, k) => {
+          it.setAttribute("role", "tabpanel");
+          it.setAttribute("aria-labelledby", tabs[k].id);
+          bodies[k].hidden = false;
+          toggles[k].tabIndex = -1;
+          toggles[k].removeAttribute("aria-expanded");
+        });
+        select(current);
+      } else {
+        track.hidden = true;
+        items.forEach((it, k) => {
+          it.hidden = false;
+          it.removeAttribute("role");
+          it.removeAttribute("aria-labelledby");
+          toggles[k].tabIndex = 0;
+          toggles[k].setAttribute("aria-expanded", String(open.has(k)));
+          bodies[k].hidden = !open.has(k);
+        });
+      }
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => select(i));
+      t.addEventListener("keydown", (e) => {
+        const n = tabs.length;
+        let k = -1;
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") k = (i + 1) % n;
+        else if (e.key === "ArrowUp" || e.key === "ArrowLeft") k = (i - 1 + n) % n;
+        else if (e.key === "Home") k = 0;
+        else if (e.key === "End") k = n - 1;
+        if (k >= 0) { e.preventDefault(); select(k, true); }
+      });
+    });
+    toggles.forEach((b, i) => b.addEventListener("click", () => { if (!wide.matches) setOpen(i, !open.has(i)); }));
+
+    // links to a route (hero ribbon, menu): open it before the browser scrolls to it
+    const go = (id: string) => {
+      const i = items.findIndex((it) => it.id === id);
+      if (i < 0) return;
+      if (wide.matches) select(i);
+      else setOpen(i, true);
+    };
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#route-"]').forEach((a) => {
+      a.addEventListener("click", () => go(a.hash.slice(1)));
+    });
+    if (location.hash.startsWith("#route-")) go(location.hash.slice(1));
+
+    mode();
+    wide.addEventListener("change", mode);
+  }
+</script>

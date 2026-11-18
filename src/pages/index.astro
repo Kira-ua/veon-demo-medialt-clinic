@@ -1,0 +1,66 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Routes from "../components/Routes.astro";
+import Branches from "../components/Branches.astro";
+import Trust from "../components/Trust.astro";
+import Book from "../components/Book.astro";
+import Footer from "../components/Footer.astro";
+import CallBar from "../components/CallBar.astro";
+import { branches, socials, channels } from "../data/site";
+
+// SEO-R002: title ≤ 60, description ≤ 160 (concept 8.7)
+const title = "Медичний центр Medialt у Львові — для всієї родини, 2 філії";
+const description = "Медичний центр Medialt у Львові: ведення вагітності, педіатр, 23 спеціальності для дорослих, чекапи, хірургія одного дня. Угорська, 12 і Пасічна, 166.";
+
+// SEO-R004: MedicalOrganization + two MedicalClinic with hours (C-001), no AggregateRating
+const dayCodes = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const hoursSpec = (hours: readonly (string | null)[]) =>
+  hours.flatMap((h, i) => {
+    if (!h) return [];
+    const [opens, closes] = h.split("–");
+    return [{ "@type": "OpeningHoursSpecification", dayOfWeek: `https://schema.org/${dayCodes[i]}`, opens: opens.padStart(5, "0"), closes: closes.padStart(5, "0") }];
+  });
+const postal: Record<string, string> = { uhorska: "79048", pasichna: "79028" };
+const streets: Record<string, string> = { uhorska: "вул. Угорська, 12", pasichna: "вул. Пасічна, 166" };
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "MedicalOrganization",
+      "@id": "#organization",
+      name: "Medialt",
+      telephone: "+380676537065",
+      email: channels.email,
+      sameAs: socials.map((s) => s.href),
+      contactPoint: [
+        { "@type": "ContactPoint", telephone: "+380676537065", contactType: "customer service", areaServed: "UA", availableLanguage: "uk" },
+        { "@type": "ContactPoint", telephone: "+380672004533", contactType: "постановка на облік з вагітності", areaServed: "UA", availableLanguage: "uk" },
+        { "@type": "ContactPoint", telephone: "+380965335221", contactType: "операційний координатор", areaServed: "UA", availableLanguage: "uk" },
+      ],
+      subOrganization: branches.map((b) => ({ "@id": `#clinic-${b.id}` })),
+    },
+    ...branches.map((b) => ({
+      "@type": "MedicalClinic",
+      "@id": `#clinic-${b.id}`,
+      name: b.name,
+      parentOrganization: { "@id": "#organization" },
+      telephone: "+380676537065",
+      address: { "@type": "PostalAddress", streetAddress: streets[b.id], addressLocality: "Львів", postalCode: postal[b.id], addressCountry: "UA" },
+      openingHoursSpecification: hoursSpec(b.hours),
+      hasMap: b.map,
+    })),
+  ],
+};
+---
+<Base lang="uk" title={title} description={description} rec="PERF-R003,PERF-R004,PERF-R006,G-R007,M-R007" jsonld={jsonld}>
+  <Header slot="header" />
+  <Hero />
+  <Routes />
+  <Branches />
+  <Trust />
+  <Book />
+  <Footer slot="footer" />
+  <CallBar slot="footer" />
+</Base>

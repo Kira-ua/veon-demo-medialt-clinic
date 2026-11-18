@@ -1,0 +1,158 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/brand/logo-full.png";
+import FutureLink from "./FutureLink.astro";
+import Icon from "./Icon.astro";
+import { anchors, phones, channels, FUTURE } from "../data/site";
+---
+<header class="header" data-rec="UX-R003">
+  <div class="header__in container">
+    <a class="header__logo" href="#top" aria-label="Medialt, на початок сторінки">
+      <Image src={logo} alt="Medialt medical clinic" width={168} height={28} densities={[1, 2]} loading="eager" decoding="async" data-rec="PERF-R005" />
+    </a>
+
+    <nav class="header__nav" aria-label="Головне меню">
+      <ul role="list">
+        {anchors.map((a) => <li><a href={a.href}>{a.label}</a></li>)}
+        <li><FutureLink note={FUTURE}>Лікарі</FutureLink></li>
+        <li><FutureLink note={FUTURE}>Ціни</FutureLink></li>
+      </ul>
+    </nav>
+
+    <div class="header__act">
+      <a class="header__phone num" href={phones.main.href}>
+        <Icon name="phone" size={22} />
+        <span class="header__phone-text">{phones.main.display}</span>
+        <span class="visually-hidden">Подзвонити</span>
+      </a>
+      <a class="btn btn--primary header__book" href="#book">Записатися</a>
+      <button class="header__burger" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+        <Icon name="menu" size={24} />
+        <span class="visually-hidden">Меню</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню" hidden>
+    <div class="menu__in container">
+      <nav aria-label="Розділи сторінки">
+        <ul role="list" class="menu__anchors">
+          {anchors.map((a) => <li><a href={a.href} data-menu-close>{a.label}</a></li>)}
+        </ul>
+        <ul role="list" class="menu__future">
+          <li><FutureLink note={FUTURE}>Лікарі</FutureLink></li>
+          <li><FutureLink note={FUTURE}>Ціни</FutureLink></li>
+        </ul>
+      </nav>
+      <div class="menu__channels">
+        <a class="btn btn--primary" href={phones.main.href}><Icon name="phone" /> Подзвонити</a>
+        <a class="btn btn--secondary" href={channels.telegram} rel="noopener" target="_blank"><Icon name="telegram" /> Telegram</a>
+        <a class="btn btn--secondary" href={channels.viber}><Icon name="viber" /> Viber</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky; top: 0; z-index: var(--z-nav);
+    background: var(--color-bg);
+    border-bottom: var(--rule) solid var(--color-rule);
+  }
+  .header__in { display: flex; align-items: center; gap: var(--space-5); height: var(--header-h); }
+  .header__logo { display: inline-flex; flex-shrink: 0; margin-inline-end: auto; padding-block: var(--space-2); }
+  .header__logo img { width: 144px; height: auto; }
+  .header__nav { display: none; }
+  .header__nav ul { display: flex; align-items: center; gap: var(--space-5); padding: 0; }
+  .header__nav a {
+    font-size: var(--text-small); font-weight: var(--weight-medium); white-space: nowrap;
+    padding-block: var(--space-2);
+    text-decoration: underline 1.5px transparent; text-underline-offset: 0.35em;
+    transition: text-decoration-color var(--dur-short) var(--ease-out);
+  }
+  .header__nav :global(.future-link) { font-size: var(--text-small); white-space: nowrap; }
+  @media (hover: hover) { .header__nav a:hover { text-decoration-color: currentColor; } }
+
+  .header__act { display: flex; align-items: center; gap: var(--space-2); }
+  .header__phone {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+    min-width: 48px; min-height: 48px; border-radius: var(--radius-pill);
+    font-size: var(--text-ui); font-weight: var(--weight-semibold); text-decoration: none;
+  }
+  .header__phone-text { display: none; }
+  .header__book { display: none; }
+  .header__burger {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 48px; height: 48px; padding: 0; border: 0; border-radius: var(--radius-pill); background: transparent; cursor: pointer;
+    transition: background-color var(--dur-short) var(--ease-out);
+  }
+  :global(html:not(.js)) .header__burger { display: none; }
+  @media (hover: hover) { .header__burger:hover, .header__phone:hover { background: var(--color-surface); } }
+
+  @media (min-width: 40rem) {
+    .header__phone { padding-inline: var(--space-3); }
+    .header__phone-text { display: inline; }
+  }
+  @media (min-width: 60rem) {
+    .header__logo img { width: 168px; }
+    .header__book { display: inline-flex; min-height: var(--control-h-sm); }
+  }
+  @media (min-width: 75rem) {
+    .header__nav { display: block; }
+    .header__burger { display: none; }
+    .header__phone { font-size: var(--text-body); }
+  }
+  @media (min-width: 75rem) and (max-width: 85rem) {
+    .header__nav ul { gap: var(--space-4); }
+    .header__in { gap: var(--space-4); }
+  }
+
+  /* full-screen menu under 75rem */
+  .menu {
+    position: fixed; inset: var(--header-h) 0 0 0; z-index: var(--z-modal);
+    background: var(--color-bg); overflow-y: auto;
+  }
+  .menu[hidden] { display: none; }
+  .menu__in { display: grid; gap: var(--space-7); padding-block: var(--space-6) calc(var(--space-7) + env(safe-area-inset-bottom)); }
+  .menu__anchors { display: grid; gap: var(--space-1); padding: 0; }
+  .menu__anchors a {
+    display: flex; align-items: center; min-height: 56px;
+    font-family: var(--font-display); font-size: var(--text-menu); line-height: var(--lh-head); text-decoration: none;
+    border-bottom: var(--rule) solid var(--color-rule);
+  }
+  .menu__future { display: flex; gap: var(--space-5); padding: var(--space-4) 0 0; }
+  .menu__future :global(.future-link) { min-height: 44px; }
+  .menu__channels { display: grid; gap: var(--space-3); }
+  :global(.js) .menu:not([hidden]) .menu__in { animation: menu-in var(--dur-short) var(--ease-out) both; }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  @media (min-width: 40rem) { .menu__channels { grid-template-columns: repeat(3, max-content); } }
+  @media (min-width: 75rem) { .menu { display: none; } }
+</style>
+
+<script>
+  const open = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+  const menu = document.getElementById("menu");
+  if (open && menu) {
+    const setOpen = (on: boolean) => {
+      menu.hidden = !on;
+      open.setAttribute("aria-expanded", String(on));
+      open.querySelector("span")!.textContent = on ? "Закрити меню" : "Меню";
+      document.documentElement.style.overflow = on ? "hidden" : "";
+      const use = open.querySelector("svg");
+      if (use) use.innerHTML = on ? '<path d="M6 6l12 12M18 6 6 18" />' : '<path d="M4 8h16M4 16h16" />';
+      if (on) menu.querySelector<HTMLElement>("a")?.focus();
+    };
+    open.addEventListener("click", () => setOpen(menu.hidden));
+    menu.querySelectorAll("[data-menu-close]").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !menu.hidden) { setOpen(false); open.focus(); }
+      if (e.key === "Tab" && !menu.hidden) {
+        const f = [open, ...menu.querySelectorAll<HTMLElement>("a, [tabindex='0']")];
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    matchMedia("(min-width: 75rem)").addEventListener("change", (e) => { if (e.matches) setOpen(false); });
+  }
+</script>
